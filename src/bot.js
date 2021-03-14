@@ -1,11 +1,11 @@
 require("dotenv").config();
+const axios = require("axios");
 
-const { Client } = require("discord.js");
 const DiscordJS = require('discord.js');
-const client = new Client();
+const client = new DiscordJS.Client();
 const PREFIX = "$";
 
-const guildId = "780285744534519860";
+const guildId = "622811140367581195";
 
 const getApp = (guildId) => {
   const app = client.api.applications(client.user.id);
@@ -43,6 +43,13 @@ client.on("ready", async () => {
       description: "A simple ping pong command",
     },
   });
+
+await getApp(guildId).commands.post({
+  data:{
+    name: "cat",
+    description: "displays a cat OwO",
+  }
+});
 
   await getApp(guildId).commands.post({
     data: {
@@ -93,6 +100,17 @@ client.on("ready", async () => {
             embed.addField(arg, value);
         }
         reply(interaction, embed)
+    }
+
+
+    if(command === "cat")
+    {
+      axios.get('https://api.thecatapi.com/v1/images/search')
+      .then((res) => {
+          reply(interaction, res.data[0].url)
+      }).catch((err)=>{
+          console.log("ERR:", err)
+      })
     }
   }); 
 });
