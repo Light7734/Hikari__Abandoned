@@ -1,10 +1,9 @@
 require("dotenv").config();
+
 const axios = require("axios");
+const DiscordJS = require("discord.js");
 
-const DiscordJS = require('discord.js');
 const client = new DiscordJS.Client();
-const PREFIX = "$";
-
 const guildId = "622811140367581195";
 
 const getApp = (guildId) => {
@@ -16,24 +15,24 @@ const getApp = (guildId) => {
 };
 
 const reply = async (interaction, response) => {
-    let data = {
-        content: response
-    }
+  let data = {
+    content: response,
+  };
 
-    // embed
-    if(typeof response === 'object'){
-        data = await createAPIMessage(interaction, response)
-    }
+  // embed
+  if (typeof response === "object") {
+    data = await createAPIMessage(interaction, response);
+  }
 
   client.api.interactions(interaction.id, interaction.token).callback.post({
     data: {
       type: 4,
       data,
-      },
-    },);
+    },
+  });
 };
 
-client.on("ready", async () => {
+client.on("ready", async () => { 
   console.log("Okay Master! - let's kill da hoe!!");
   const commands = await getApp(guildId).commands.get();
 
@@ -44,35 +43,27 @@ client.on("ready", async () => {
     },
   });
 
-await getApp(guildId).commands.post({
-  data:{
-    name: "cat",
-    description: "displays a cat OwO",
-  }
-});
-
   await getApp(guildId).commands.post({
     data: {
-      name: "embed",
-      description: "Displays an embed",
+      name: "hug",
+      description: "Hug someone ^^",
       options: [
         {
-          name: "Name",
-          description: "Your name",
-          required: "true",
-          type: 3, // string
-        },
-        {
-          name: "Age",
-          description: "Your age",
-          required: false,
-          type: 4, // integer
+          name: "target",
+          description: "whom to hug",
+          required: true,
+          type: 6,
         },
       ],
     },
   });
 
-  console.log(commands);
+  await getApp(guildId).commands.post({
+    data: {
+      name: "cat",
+      description: "displays a cat OwO",
+    },
+  });
 
   client.ws.on("INTERACTION_CREATE", async (interaction) => {
     const { name, options } = interaction.data;
@@ -86,50 +77,30 @@ await getApp(guildId).commands.post({
       }
     }
 
-    console.log(args);
-    console.log(command);
-
-    if (command === "ping") {
-      reply(interaction, "pong");
-    }
-
-    if(command === 'embed'){
-        const embed = new DiscordJS.MessageEmbed().setTitle('example embed')
-        for(const arg in args){
-            const value = args[arg]
-            embed.addField(arg, value);
-        }
-        reply(interaction, embed)
-    }
-
-
-    if(command === "cat")
-    {
-      axios.get('https://api.thecatapi.com/v1/images/search')
-      .then((res) => {
-          reply(interaction, res.data[0].url)
-      }).catch((err)=>{
-          console.log("ERR:", err)
-      })
-    }
-  }); 
+    runCommand(command, args, interaction);
+  });
 });
 
-const createAPIMessage = async(interaction, content) => {
-    const { data, files } = await DiscordJS.APIMessage.create(
-        client.channels.resolve(interaction.channel_id),
-        content
-    )
+const runCommand = async (command, args, interaction) => {
+  require("./commands/" + command + ".js")
+  .call(client, args, interaction)
+    .then((response) => {
+      reply(interaction, response);
+    })
+    .catch((err) => {
+      reply(interaction, err);
+    });
+};
+
+const createAPIMessage = async (interaction, content) => {
+  const { data, files } = await DiscordJS.APIMessage.create(
+    client.channels.resolve(interaction.channel_id),
+    content
+  )
     .resolveData()
-    .resolveFiles()
-    
-    return { ...data, files }
-}
+    .resolveFiles();
 
-client.on("message", (message) => {
-  if (!message.content.startsWith(PREFIX)) return;
-
-  const [CMD_NAME, ...args] = message.content.trim().substring(1).split("/s+/");
-});
+  return { ...data, files };
+};
 
 client.login(process.env.DISCORDJS_BOT_TOKEN);
