@@ -1,15 +1,15 @@
-module.exports.call = (client, args, interaction) => {
-	return new Promise((resolve, reject) => {
-		const axios = require("axios");
+const { MessageEmbed } = require("discord.js");
 
-		axios
-			.get("https://api.thecatapi.com/v1/images/search")
-			.then((res) => {
-				return resolve(res.data[0].url);
-			})
-			.catch((err) => {
-				console.log("ERR:", err);
-				return reject(err);
-			});
-	});
+const Axios = require("axios").default;
+const Reply = require('../reply.js');
+const ColorScheme = require('../ColorScheme.json');
+
+module.exports.call = (client, args, interaction) => {
+	Axios.get("https://api.thecatapi.com/v1/images/search").then((res) => {
+		const embed = new MessageEmbed()
+			.setImage(res.data[0].url)
+			.setColor(ColorScheme.normal);
+			
+		Reply.editIResponse(interaction, embed);
+	})
 }

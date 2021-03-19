@@ -1,0 +1,77 @@
+{
+  "testGuilds": [
+    "622811140367581195",
+    "780285744534519860",
+    "819692068595171339"
+  ],
+
+  "commands": [
+    {
+      "name": "ping",
+      "description": "Responds with pong"
+    },
+
+    {
+      "name": "cat",
+      "description": "Displays a picture of random cat(s) :3"
+    },
+
+    {
+      "name": "hug",
+      "description": "You'll hug someone",
+      "options": [
+        {
+          "name": "target",
+          "description": "The person you wish to hug >_<",
+          "required": true,
+          "type": 6
+        }
+      ]
+    },
+
+    {
+      "name": "dota",
+      "description": "Displays some information about a dota match",
+      "options": [
+        {
+          "name": "match_id",
+          "description": "Match ID",
+          "required": true,
+          "type": 3
+        }
+      ]
+    },
+
+    {
+      "name": "urban",
+      "description": "Defines a word form urban dictionary",
+      "options": [
+        {
+          "name": "term",
+          "description": "The term you wish to define",
+          "required": true,
+          "type": 3
+        },
+        {
+          "name": "count",
+          "description": "How many definitions you need",
+          "required": false,
+          "type": 4
+        }
+      ]
+    },
+
+    {
+      "name": "define",
+      "description": "Defines a word from dictionary",
+      "options": [
+        {
+          "name": "word",
+          "description": "The word you wish to define",
+          "required": true,
+          "type": 3
+        }
+      ]
+    }
+  ]
+}
